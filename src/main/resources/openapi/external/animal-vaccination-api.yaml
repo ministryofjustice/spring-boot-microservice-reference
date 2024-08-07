@@ -1,0 +1,87 @@
+openapi: 3.0.3
+info:
+  title: Animal Vaccination API
+  version: "1.0"
+  description: |-
+    This is an example API for another (dependant) service which provides vaccination 
+    details for various animals.
+  contact:
+    email: apiteam@cgi.com
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers: [
+  {
+    "url": "http://localhost:8080/api/v1",
+    "description": "Local development"
+  },
+  {
+    "url": "https://staging.cloud.com/api/v1",
+    "description": "Staging server"
+  },
+  {
+    "url": "https://production.cloud.com/api/v1",
+    "description": "Production server"
+  }
+]
+
+tags:
+  - name: vaccination
+    description: All the vaccination details for your animals.
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+paths:
+  /vaccinations/{vaccinationId}:
+    get:
+      tags:
+        - vaccination
+      summary: Get vaccination details
+      description: Get all vaccination details for the supplied vaccination Id.
+      operationId: getVaccinationDetails
+      parameters:
+        - name: vaccinationId
+          in: path
+          description: Vaccination Id of the animal for which we require vaccination details for.
+          required: true
+          schema:
+            $ref: '#/components/schemas/VaccinationId'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VaccinationsResponse'
+        '400':
+          description: Invalid Vaccination Id supplied
+        '404':
+          description: Vaccination details not found
+        '405':
+          description: Validation exception
+
+components:
+  schemas:
+    VaccinationId:
+      type: string
+      description: The unique Id used to identify all vaccination details for the specified animal.
+      example: AF54785412K
+    Vaccination:
+      type: object
+      properties:
+        vaccinationName:
+          type: string
+          example: Parainfluenza
+        dateOfAdminister:
+          type: string
+          format: date
+          example: 2017-07-21
+    VaccinationsResponse:
+      type: object
+      properties:
+        vaccinationId:
+          $ref: '#/components/schemas/VaccinationId'
+        vaccinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vaccination'

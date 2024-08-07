@@ -1,0 +1,385 @@
+openapi: 3.0.3
+info:
+  title: Pet Store API
+  version: "1.0.0"
+  description: |
+    This is an example Pet Store API to illustrate various microservice concepts.
+    The API provides the following functionality:
+
+    - New pets can be added to the pet store.
+    - Customers can search for a pet.
+    - Pets can be updated when details change.
+    - Customers can purchase a pet.
+    - Pets can be removed (archived) from the pet store.
+    - Pet vaccination details are provided via an external API call.
+  contact:
+    email: alex.stone@cgi.com
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+tags:
+  - name: pets
+    description: Operations on the Pet Store concerning pets.
+servers: [
+  {
+    url: "http://localhost:8080/api/v1/pet-store",
+    description: "Local development"
+  },
+  {
+    url: "https://staging.cloud.com/api/v1/pet-store",
+    description: "Staging server"
+  },
+  {
+    url: "https://production.cloud.com/api/v1/pet-store",
+    description: "Production server"
+  }
+]
+
+paths:
+  /pets:
+    patch:
+      tags:
+        - pets
+      summary: Update an existing pet
+      description: Update an existing pet by Id
+      operationId: patchPet
+      requestBody:
+        description: Update an existent pet in the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetPatchRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetResponse'
+        '400':
+          description: Invalid Pet Id supplied
+        '404':
+          description: Pet not found
+        '405':
+          description: Validation exception
+    post:
+      tags:
+        - pets
+      summary: Add a new pet to the store
+      description: Add a new pet to the store
+      operationId: addPet
+      requestBody:
+        description: Create a new pet in the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPetRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetResponse'
+  /pets/findByStatus:
+    get:
+      tags:
+        - pets
+      summary: Finds Pets by status
+      description: Multiple status values can be provided with comma separated strings
+      operationId: findPetsByStatus
+      parameters:
+        - name: statuses
+          in: query
+          description: Status values that need to be considered for filter
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/PetAvailabilityStatus'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MultiplePetsResponse'
+        '400':
+          description: Invalid status value
+  /pets/{petId}:
+    get:
+      tags:
+        - pets
+      summary: Find pet by Id
+      description: Returns a single pet
+      operationId: getPetById
+      parameters:
+        - name: petId
+          in: path
+          description: Id of pet to return
+          required: true
+          schema:
+            $ref: '#/components/schemas/PetId'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetResponse'
+        '400':
+          description: Invalid Pet Id supplied
+        '404':
+          description: Pet not found
+    post:
+      tags:
+        - pets
+      summary: Called when a customer purchases a pet.
+      description: Update the details for the pet to reflect the new owner.
+      operationId: purchasePet
+      parameters:
+        - name: petId
+          in: path
+          description: Id of the pet to purchase
+          required: true
+          schema:
+            $ref: '#/components/schemas/PetId'
+      requestBody:
+        description: The details of the purchasing customer
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerRequest'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetResponse'
+        '400':
+          description: Invalid pet value
+    delete:
+      tags:
+        - pets
+      summary: Remove a pet from the store.
+      description: By supplying a Pet Id, remove the single pet from the pet store.
+      operationId: deletePetById
+      parameters:
+        - name: petId
+          in: path
+          description: Id of pet to delete
+          required: true
+          schema:
+            $ref: '#/components/schemas/PetId'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetDeletionResponse'
+        '400':
+          description: Invalid Pet Id supplied
+        '404':
+          description: Pet not found
+
+components:
+  schemas:
+    PetId:
+      type: string
+      description: The unique Id for the pet in the Pet Shop.
+      maxLength: 26
+      example: KT1546
+    PetName:
+      type: string
+      description: The pet answers to this name.
+      example: Fido
+    PetAvailabilityStatus:
+      type: string
+      description: The availability of the pet in the Pet Shop.
+      enum:
+        - Available For Purchase
+        - Pending Collection
+        - Sold
+      default: Available For Purchase
+    PetVaccinationId:
+      type: string
+      description: The unique Id used to identify all vaccination details for the specified pet.
+      example: AF54785412K
+    PetStoreVaccination:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Parainfluenza
+        dateOfAdminister:
+          type: string
+          format: date
+          example: 2017-07-21
+    PetType:
+      type: string
+      description: The type of animal the pet is.
+      example: Dog
+      enum:
+        - Dog
+        - Cat
+        - Guinea Pig
+        - Fish
+    PhotoUrls:
+      type: array
+      description: The URLs to a selection of petty pictures.
+      items:
+        type: string
+        example: https://www.freepik.com/free-photo/isolated-happy-smiling-dog-white-background-portrait-4_39994000.htm#uuid=4f38a524-aa89-430d-8041-1de9ffb631c6
+    CustomerRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - address
+      properties:
+        customerId:
+          type: string
+          example: C246879
+        username:
+          type: string
+          example: alex.stone
+        firstName:
+          type: string
+          example: Alex
+        lastName:
+          type: string
+          example: Stone
+        email:
+          type: string
+          example: alex.stone@cgi.com
+        address:
+          $ref: '#/components/schemas/Address'
+    CustomerResponse:
+      allOf:
+        - $ref: '#/components/schemas/CustomerRequest'
+      type: object
+      required:
+        - customerId
+        - firstName
+        - lastName
+        - address
+    Address:
+      type: object
+      required:
+        - street
+        - city
+        - postCode
+        - country
+      properties:
+        street:
+          type: string
+          example: 40 Princes Street
+        city:
+          type: string
+          example: Edinburgh
+        postCode:
+          type: string
+          example: EH2 2BY
+        country:
+          type: string
+          example: United Kingdom
+    PetInformationItem:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+          description: The name/type of additional information.
+          example: Type of Coat
+        description:
+          type: string
+          description: The actual additional information content.
+          example: Short Hair
+    NewPetRequest:
+      description: A Pet which is new to the Pet Store. Does not have any vaccination details, and will have a PetAvailabilityStatus of "Available For Purchase".
+      type: object
+      required:
+        - vaccinationId
+        - name
+        - petType
+      properties:
+        vaccinationId:
+          $ref: '#/components/schemas/PetVaccinationId'
+        name:
+          $ref: '#/components/schemas/PetName'
+        petType:
+          $ref: '#/components/schemas/PetType'
+        photoUrls:
+          $ref: '#/components/schemas/PhotoUrls'
+        additionalInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/PetInformationItem'
+    PetResponse:
+      allOf:
+        - $ref: '#/components/schemas/NewPetRequest'
+      type: object
+      required:
+        - id
+        - vaccinationId
+        - name
+        - petType
+        - availabilityStatus
+      properties:
+        petId:
+          $ref: '#/components/schemas/PetId'
+        vaccinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PetStoreVaccination'
+        availabilityStatus:
+          $ref: '#/components/schemas/PetAvailabilityStatus'
+        owner:
+          $ref: '#/components/schemas/CustomerResponse'
+    PetDeletionResponse:
+      type: object
+      required:
+        - petId
+      properties:
+        petId:
+          $ref: '#/components/schemas/PetId'
+        message:
+          type: string
+          description: Message relating to the deletion request.
+          example: Successfully deleted the pet with Id KT1546.
+    PetPatchRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          $ref: '#/components/schemas/PetId'
+        vaccinationId:
+          $ref: '#/components/schemas/PetVaccinationId'
+        name:
+          $ref: '#/components/schemas/PetName'
+        petType:
+          $ref: '#/components/schemas/PetType'
+        photoUrls:
+          $ref: '#/components/schemas/PhotoUrls'
+        additionalInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/PetInformationItem'
+        availabilityStatus:
+          $ref: '#/components/schemas/PetAvailabilityStatus'
+    MultiplePetsResponse:
+      type: object
+      description: The result of a request which may return 2 or more Pets.
+      properties:
+        pets:
+          type: array
+          items:
+            $ref: '#/components/schemas/PetResponse'

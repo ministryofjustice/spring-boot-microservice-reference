@@ -1,0 +1,3 @@
+rootProject.name = 'spring-boot-microservice-template'
+
+include 'common', 'load-test', 'api-test'

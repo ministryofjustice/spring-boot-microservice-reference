@@ -1,0 +1,5 @@
+server.port: 0
+
+management.server.port: 0
+
+context.initializer.classes: com.cgi.example.petstore.local.SetSystemPropertiesForEmbeddedServices

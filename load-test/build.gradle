@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'io.freefair.lombok' version "$lombokPluginVersion"
+}
+
+group = 'com.cgi.example.loadtest'
+description = 'Gatling based API load test template.'
+
+java {
+    sourceCompatibility = "$javaVersion"
+    targetCompatibility = "$javaVersion"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "$characterEncoding"
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+application {
+    mainClass.set('com.cgi.example.loadtest.LoadTestApplication')
+}
+
+dependencies {
+    implementation project(':common')
+
+    implementation platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+
+    implementation "org.scala-lang:scala-library:$scalaLibraryVersion"
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation "io.gatling:gatling-core:$gatlingLoadTestVersion"
+    implementation "io.gatling:gatling-http:$gatlingLoadTestVersion"
+    implementation "io.gatling.highcharts:gatling-charts-highcharts:$gatlingLoadTestVersion"
+    implementation "io.gatling:gatling-test-framework:$gatlingLoadTestVersion"
+    implementation "org.apache.commons:commons-math3:$commonsMathVersion"
+    implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonDatabindVersion"
+}

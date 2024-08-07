@@ -1,0 +1,12 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/vaccinations/Z504INVALID"
+  },
+  "response": {
+    "status": 504,
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

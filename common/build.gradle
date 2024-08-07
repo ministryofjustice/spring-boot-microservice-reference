@@ -1,0 +1,89 @@
+plugins {
+    id 'java-library'
+    id 'jacoco'
+    id 'io.freefair.lombok' version "$lombokPluginVersion"
+}
+
+group = 'com.cgi.example.common'
+description = 'Common code for the template project.'
+
+java {
+    sourceCompatibility = "$javaVersion"
+    targetCompatibility = "$javaVersion"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "$characterEncoding"
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    implementation platform("org.junit:junit-bom:$junitJupiterVersion")
+    implementation platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation "org.hamcrest:hamcrest-all:$harmcrestVersion"
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    '**/entity/**',
+                    '**/model/**',
+                    '**/dto/**',
+                    '**/config/**'
+            ])
+        }))
+    }
+}
+
+def generatedSources = '/generated/sources/local/src/main/java/'
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java',
+                       "${layout.buildDirectory.get()}" + generatedSources]
+        }
+    }
+}
+
+test() {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+tasks.register('generateDynamicApplicationFileProperties') {
+    group = 'build'
+    description = 'Generate a Java class to provide the absolute path to the dynamicApplicationProperties.json such ' +
+            'that the path is independent of the calling module/sub-module.'
+
+    def buildDirectoryPath = layout.buildDirectory.get().toString().replace('\\', '/')
+    def filePath = buildDirectoryPath + generatedSources + "${project.group.replace('.', '/')}/DynamicApplicationFileProperties.java"
+    def file = new File(filePath)
+    file.parentFile.mkdirs()
+    file.text = """package ${project.group};
+
+public class DynamicApplicationFileProperties {
+    private static final String FILE_NAME = "dynamicApplicationProperties.json";
+    public static final String FILE_PATH = "${buildDirectoryPath}/tmp/local/" + FILE_NAME;
+}        """
+}
+
+compileJava.dependsOn generateDynamicApplicationFileProperties

@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/vaccinations/ZERO5485412K"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "vaccinations/noVaccinationsResponse_ZERO5485412K.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

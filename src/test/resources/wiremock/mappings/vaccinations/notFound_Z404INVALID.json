@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/vaccinations/Z404INVALID"
+  },
+  "response": {
+    "status": 404,
+    "bodyFileName": "vaccinations/notFoundResponse_Z404INVALID.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

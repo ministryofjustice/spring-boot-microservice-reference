@@ -1,0 +1,1624 @@
+{
+	"info": {
+		"_postman_id": "ee62465f-776e-4163-9230-8bd8e7922351",
+		"name": "spring-boot-microservice-template",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30977988"
+	},
+	"item": [
+		{
+			"name": "Actuator",
+			"item": [
+				{
+					"name": "actuator",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Response contains a _links attribute\", function () {\r",
+									"    pm.expect(jsonData).to.have.property('_links');\r",
+									"});\r",
+									"\r",
+									"var links = jsonData._links;\r",
+									"const expectedLinksAttributes = ['self', 'beans', 'health', \r",
+									"'health-path', 'info', 'configprops', 'configprops-prefix', \r",
+									"'prometheus', 'env', 'env-toMatch', 'loggers', 'loggers-name',\r",
+									"'metrics-requiredMetricName', 'metrics', 'mappings'];\r",
+									"\r",
+									"expectedLinksAttributes.forEach(expectedAttribute => {\r",
+									"    pm.test(`_links contains a ${expectedAttribute} attribute`, function () {\r",
+									"        pm.expect(links).to.have.property(expectedAttribute);\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{managementPort}}/actuator",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{managementPort}}",
+							"path": [
+								"actuator"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actuator/metrics/jvm.memory.used",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Response contains name attribute with value jvm.memory.used\", function () {   \r",
+									"    pm.expect(jsonData.name).to.eql(\"jvm.memory.used\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains a measurements attribute\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"measurements\");\r",
+									"});\r",
+									"\r",
+									"var measurements = jsonData.measurements;\r",
+									"pm.test(\"Response contains a measurements.value attribute\", function () {\r",
+									"    pm.expect(measurements[0]).to.have.property(\"value\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains measurements.value which is a positive number\", function () {\r",
+									"    pm.expect(measurements[0].value).to.be.above(0e0);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{managementPort}}/actuator/metrics/jvm.memory.used",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{managementPort}}",
+							"path": [
+								"actuator",
+								"metrics",
+								"jvm.memory.used"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actuator/metrics",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Response contains a names attribute\", function () {\r",
+									"    pm.expect(jsonData).to.have.property('names');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains a names attribute which is an array containing at least 10 metric names\", function () {\r",
+									"    pm.expect(jsonData.names).to.be.an('array').that.has.lengthOf.at.least(10);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{managementPort}}/actuator/metrics",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{managementPort}}",
+							"path": [
+								"actuator",
+								"metrics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actuator/prometheus",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "text/plain",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{managementPort}}/actuator/prometheus",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{managementPort}}",
+							"path": [
+								"actuator",
+								"prometheus"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actuator/health",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Response contains status attribute with value UP\", function () {   \r",
+									"    pm.expect(jsonData.status).to.eql(\"UP\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{managementPort}}/actuator/health",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{managementPort}}",
+							"path": [
+								"actuator",
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actuator/env",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{managementPort}}/actuator/env",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{managementPort}}",
+							"path": [
+								"actuator",
+								"env"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actuator/info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Response contains build attribute\", function () {   \r",
+									"    pm.expect(jsonData).to.have.property(\"build\");\r",
+									"});\r",
+									"\r",
+									"var build = jsonData.build;\r",
+									"pm.test(\"Response contains build.description attribute with value 'Spring Boot Template Service modeled on an online Pet Store.'\", function () {   \r",
+									"    pm.expect(build.description).to.eql(\"Spring Boot Template Service modeled on an online Pet Store.\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains build.version attribute with value '1.0.0-SNAPSHOT'\", function () {   \r",
+									"    pm.expect(build.version).to.eql(\"1.0.0-SNAPSHOT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains build.artifact attribute with value 'spring-boot-microservice-template'\", function () {   \r",
+									"    pm.expect(build.artifact).to.eql(\"spring-boot-microservice-template\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains build.name attribute with value 'spring-boot-microservice-template'\", function () {   \r",
+									"    pm.expect(build.name).to.eql(\"spring-boot-microservice-template\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains build.group attribute with value 'com.cgi.example.'\", function () {   \r",
+									"    pm.expect(build.group).to.eql(\"com.cgi.example\");\r",
+									"});\r",
+									"\r",
+									"var git = jsonData.git;\r",
+									"pm.test(\"Response contains non-empty git.branch\", function () {   \r",
+									"    pm.expect(git.branch).to.be.a('string').and.to.have.lengthOf.at.least(2);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains a complete git.commit.id of exactly 40 characters e.g. 9db387e800f1ac1c3c16b90fb189538f443da1fc\", function () {   \r",
+									"    pm.expect(git.commit.id).to.be.a('string').and.to.have.lengthOf.at.least(40);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{managementPort}}/actuator/info",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{managementPort}}",
+							"path": [
+								"actuator",
+								"info"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actuator/configprops",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{managementPort}}/actuator/configprops",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{managementPort}}",
+							"path": [
+								"actuator",
+								"configprops"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actuator/beans",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{managementPort}}/actuator/beans",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{managementPort}}",
+							"path": [
+								"actuator",
+								"beans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actuator/loggers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Response contains a levels attribute\", function () {\r",
+									"    pm.expect(jsonData).to.have.property('levels');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains a levels attribute which is an array containing at least 3 levels\", function () {\r",
+									"    pm.expect(jsonData.levels).to.be.an('array').that.has.lengthOf.at.least(3);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains a loggers attribute\", function () {\r",
+									"    pm.expect(jsonData).to.have.property('loggers');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{managementPort}}/actuator/loggers",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{managementPort}}",
+							"path": [
+								"actuator",
+								"loggers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actuator/httptrace",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404); // TODO Fix this\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{managementPort}}/actuator/httptrace",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{managementPort}}",
+							"path": [
+								"actuator",
+								"httptrace"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actuator/mappings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{managementPort}}/actuator/mappings",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{managementPort}}",
+							"path": [
+								"actuator",
+								"mappings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "OAuth2",
+			"item": [
+				{
+					"name": "openid-configuration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"openid-configuration has authorization_endpoint attribute\", function () {\r",
+									"    pm.expect(jsonData.authorization_endpoint).to.be.a('string').and.to.contain(\"/default/authorize\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"openid-configuration has token_endpoint attribute\", function () {\r",
+									"    pm.expect(jsonData.token_endpoint).to.be.a('string').and.to.contain(\"/default/token\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{oAuth2Port}}/default/.well-known/openid-configuration",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{oAuth2Port}}",
+							"path": [
+								"default",
+								".well-known",
+								"openid-configuration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "authorize",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 302\", function () {\r",
+									"    pm.response.to.have.status(302);\r",
+									"});\r",
+									"\r",
+									"var locationHeader = pm.response.headers.get('location');\r",
+									"pm.test(\"location header has a code defined\", function () {\r",
+									"    pm.expect(locationHeader).to.be.a('string').and.to.contain(\"code=\");\r",
+									"});\r",
+									"\r",
+									"var extractedCode = locationHeader.match(/code=([^&]*)/)[1];\r",
+									"\r",
+									"pm.test(\"OAuth2 Code is String of at least 10 characters long\", function () {\r",
+									"    pm.expect(extractedCode).to.be.a('string').and.to.have.lengthOf.at.least(10);\r",
+									"});\r",
+									"pm.collectionVariables.set(\"oAuth2Code\", extractedCode);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true,
+						"followRedirects": false
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://{{host}}:{{oAuth2Port}}/default/authorize?response_type=code&client_id=SomeClientId&scope=openid&redirect_uri=%2F",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{oAuth2Port}}",
+							"path": [
+								"default",
+								"authorize"
+							],
+							"query": [
+								{
+									"key": "response_type",
+									"value": "code"
+								},
+								{
+									"key": "client_id",
+									"value": "SomeClientId"
+								},
+								{
+									"key": "scope",
+									"value": "openid"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "%2F"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "default/token",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var oAuth2Code = pm.collectionVariables.get(\"oAuth2Code\");\r",
+									"\r",
+									"pm.test(\"OAuth2 Code is String of at least 10 characters long\", function () {\r",
+									"    pm.expect(oAuth2Code).to.be.a('string').and.to.have.lengthOf.at.least(10);\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Response body has token_type equal to Bearer\", function () {   \r",
+									"    pm.expect(jsonData.token_type).to.eql(\"Bearer\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Body has an access_token which is a String of at least 10 characters long\", function () {\r",
+									"    pm.expect(jsonData.access_token).to.be.a('string').and.to.have.lengthOf.at.least(10);\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"oAuth2AccessToken\", jsonData.access_token);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "authorization_code",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "{{oAuth2Code}}",
+									"type": "text"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "/",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "someClientId",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{host}}:{{oAuth2Port}}/default/token",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{oAuth2Port}}",
+							"path": [
+								"default",
+								"token"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Application",
+			"item": [
+				{
+					"name": "addPet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Response contains petId of minimum length 5\", function () {   \r",
+									"    pm.expect(jsonData.petId).to.be.a('string').and.to.have.lengthOf.at.least(5);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains at least 1 vaccination element\", function () {\r",
+									"    pm.expect(jsonData.vaccinations).to.be.an('array').that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"petId\", jsonData.petId);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var oAuth2AccessToken = pm.collectionVariables.get(\"oAuth2AccessToken\");\r",
+									"\r",
+									"pm.test(\"A predefined oAuth2AccessToken has been set which is a String of at least 10 characters long\", function () {\r",
+									"    pm.expect(oAuth2AccessToken).to.be.a('string').and.to.have.lengthOf.at.least(10);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"vaccinationId\": \"AF54785412K\",\r\n  \"name\": \"Fido\",\r\n  \"petType\": \"Dog\",\r\n  \"photoUrls\": [\r\n    \"https://www.freepik.com/free-photo/isolated-happy-smiling-dog-white-background-portrait-4_39994000.htm#uuid=4f38a524-aa89-430d-8041-1de9ffb631c6\"\r\n  ],\r\n  \"additionalInformation\": [\r\n    {\r\n      \"name\": \"Personality\",\r\n      \"description\": \"Energetic\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{applicationPort}}/api/v1/pet-store/pets",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{applicationPort}}",
+							"path": [
+								"api",
+								"v1",
+								"pet-store",
+								"pets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getPetById",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"petId collection variable has been populated\", function () {\r",
+									"    var petId = pm.collectionVariables.get(\"petId\");\r",
+									"    pm.expect(petId).to.be.a('string').and.to.have.lengthOf.at.least(5);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Response contains petId matching {{petId}}\", function () {   \r",
+									"    pm.expect(jsonData.petId).to.eql(pm.collectionVariables.get(\"petId\"));\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains availabilityStatus of 'Available For Purchase'\", function () {   \r",
+									"    pm.expect(jsonData.availabilityStatus).to.eql(\"Available For Purchase\");\r",
+									"});\r",
+									"pm.collectionVariables.set(\"availabilityStatus\", jsonData.availabilityStatus);\r",
+									"\r",
+									"pm.test(\"Response contains at least 1 vaccination element\", function () {\r",
+									"    pm.expect(jsonData.vaccinations).to.be.an('array').that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains name equal to Fido\", function () {   \r",
+									"    pm.expect(jsonData.name).to.eql(\"Fido\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains 1 additionalInformation element\", function () {\r",
+									"    pm.expect(jsonData.additionalInformation).to.be.an('array').to.have.lengthOf(1);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{applicationPort}}/api/v1/pet-store/pets/{{petId}}",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{applicationPort}}",
+							"path": [
+								"api",
+								"v1",
+								"pet-store",
+								"pets",
+								"{{petId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findPetsByStatus",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var availabilityStatus = pm.collectionVariables.get(\"availabilityStatus\");\r",
+									"\r",
+									"pm.test(\"availabilityStatus has been populated\", function () {\r",
+									"    pm.expect(availabilityStatus).to.be.a('string').and.to.have.lengthOf.at.least(1);\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"availabilityStatusUrlEncoded\", encodeURIComponent(availabilityStatus));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Response contains at least 1 pet element\", function () {\r",
+									"    pm.expect(jsonData.pets).to.be.an('array').that.is.not.empty;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{applicationPort}}/api/v1/pet-store/pets/findByStatus?statuses={{availabilityStatusUrlEncoded}}",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{applicationPort}}",
+							"path": [
+								"api",
+								"v1",
+								"pet-store",
+								"pets",
+								"findByStatus"
+							],
+							"query": [
+								{
+									"key": "statuses",
+									"value": "{{availabilityStatusUrlEncoded}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patchPet",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"petId collection variable has been populated\", function () {\r",
+									"    var petId = pm.collectionVariables.get(\"petId\");\r",
+									"    pm.expect(petId).to.be.a('string').and.to.have.lengthOf.at.least(5);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Response contains petId matching {{petId}}\", function () {   \r",
+									"    pm.expect(jsonData.petId).to.eql(pm.collectionVariables.get(\"petId\"));\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains availabilityStatus of 'Available For Purchase'\", function () {   \r",
+									"    pm.expect(jsonData.availabilityStatus).to.eql(\"Available For Purchase\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains name equal to Astro\", function () {   \r",
+									"    pm.expect(jsonData.name).to.eql(\"Astro\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains 2 additionalInformation elements\", function () {\r",
+									"    pm.expect(jsonData.additionalInformation).to.be.an('array').to.have.lengthOf(2);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"additionalInformation\": [\r\n    {\r\n      \"description\": \"Green\",\r\n      \"name\": \"Eye colour\"\r\n    },\r\n    {\r\n      \"description\": \"Energetic\",\r\n      \"name\": \"Personality\"\r\n    }\r\n  ],\r\n  \"availabilityStatus\": \"Available For Purchase\",\r\n  \"id\": \"{{petId}}\",\r\n  \"name\": \"Astro\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{applicationPort}}/api/v1/pet-store/pets",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{applicationPort}}",
+							"path": [
+								"api",
+								"v1",
+								"pet-store",
+								"pets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deletePetById",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Response contains petId matching {{petId}}\", function () {\r",
+									"    pm.expect(jsonData.petId).to.eql(pm.collectionVariables.get(\"petId\"));\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Message has been populated\", function () {\r",
+									"    pm.expect(jsonData.message).to.be.a('string').and.to.have.lengthOf.at.least(5);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"petId collection variable has been populated\", function () {\r",
+									"    var petId = pm.collectionVariables.get(\"petId\");\r",
+									"    pm.expect(petId).to.be.a('string').and.to.have.lengthOf.at.least(5);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"vaccinationId\": \"AF54785412K\",\r\n  \"name\": \"Fido\",\r\n  \"petType\": \"Dog\",\r\n  \"photoUrls\": [\r\n    \"https://www.freepik.com/free-photo/isolated-happy-smiling-dog-white-background-portrait-4_39994000.htm#uuid=4f38a524-aa89-430d-8041-1de9ffb631c6\"\r\n  ],\r\n  \"additionalInformation\": [\r\n    {\r\n      \"name\": \"Personality\",\r\n      \"description\": \"Energetic\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{applicationPort}}/api/v1/pet-store/pets/{{petId}}",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{applicationPort}}",
+							"path": [
+								"api",
+								"v1",
+								"pet-store",
+								"pets",
+								"{{petId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getPetById - Not Found",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"petId collection variable has been populated\", function () {\r",
+									"    var petId = pm.collectionVariables.get(\"petId\");\r",
+									"    pm.expect(petId).to.be.a('string').and.to.have.lengthOf.at.least(5);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{applicationPort}}/api/v1/pet-store/pets/{{petId}}",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{applicationPort}}",
+							"path": [
+								"api",
+								"v1",
+								"pet-store",
+								"pets",
+								"{{petId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{oAuth2AccessToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "External",
+			"item": [
+				{
+					"name": "get External Vaccinations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{wireMockPort}}/vaccinations/AF54785412K",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{wireMockPort}}",
+							"path": [
+								"vaccinations",
+								"AF54785412K"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "API Documentation",
+			"item": [
+				{
+					"name": "swagger-ui.html",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{applicationPort}}/swagger-ui.html",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{applicationPort}}",
+							"path": [
+								"swagger-ui.html"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/swagger-ui/index.html",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{applicationPort}}/swagger-ui/index.html",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{applicationPort}}",
+							"path": [
+								"swagger-ui",
+								"index.html"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "v3/api-docs/swagger-config",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{applicationPort}}/v3/api-docs/swagger-config",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{applicationPort}}",
+							"path": [
+								"v3",
+								"api-docs",
+								"swagger-config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "v3/api-docs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{applicationPort}}/v3/api-docs",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{applicationPort}}",
+							"path": [
+								"v3",
+								"api-docs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "v3/api-docs.yaml",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.oai.openapi",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{applicationPort}}/v3/api-docs.yaml",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{applicationPort}}",
+							"path": [
+								"v3",
+								"api-docs.yaml"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "v3/api-docs/springdoc",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "{{acceptHeader}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{applicationPort}}/v3/api-docs/springdoc",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{applicationPort}}",
+							"path": [
+								"v3",
+								"api-docs",
+								"springdoc"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "petId",
+			"value": ""
+		},
+		{
+			"key": "availabilityStatus",
+			"value": ""
+		},
+		{
+			"key": "availabilityStatusUrlEncoded",
+			"value": ""
+		},
+		{
+			"key": "acceptHeader",
+			"value": "application/json",
+			"type": "string"
+		},
+		{
+			"key": "oAuth2Code",
+			"value": ""
+		},
+		{
+			"key": "oAuth2AccessToken",
+			"value": ""
+		}
+	]
+}

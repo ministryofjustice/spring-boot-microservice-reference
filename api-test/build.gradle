@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'io.freefair.lombok' version "$lombokPluginVersion"
+}
+
+group = 'com.cgi.example.apitest'
+description = 'Postman and Newman based integration tests.'
+
+java {
+    sourceCompatibility = "$javaVersion"
+    targetCompatibility = "$javaVersion"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "$characterEncoding"
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+application {
+    mainClass.set('com.cgi.example.apitest.ApiTestApplication')
+}
+
+dependencies {
+    implementation project(':common')
+
+    implementation platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+}

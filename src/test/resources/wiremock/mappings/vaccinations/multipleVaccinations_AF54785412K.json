@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/vaccinations/AF54785412K"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "vaccinations/multipleVaccinationsResponse_AF54785412K.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

@@ -1,0 +1,241 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
+plugins {
+    id 'java'
+    id 'application'
+    id 'jacoco'
+    id 'io.freefair.lombok' version "$lombokPluginVersion"
+    id 'org.springframework.boot' version "$springBootVersion"
+    id 'org.openapi.generator' version "$openApiGeneratorVersion"
+    id 'com.diffplug.spotless' version "$diffPlugSpotlessVersion"
+    id 'com.github.ben-manes.versions' version "$versionsPluginVersion"
+    id 'com.gorylenko.gradle-git-properties' version "$gitPropertiesPluginVersion"
+}
+
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.openapi.generator'
+
+group = 'com.cgi.example'
+description = 'Spring Boot Template Service modeled on an online Pet Store.'
+version = '1.0.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = "$javaVersion"
+    targetCompatibility = "$javaVersion"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "$characterEncoding"
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+dependencies {
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    implementation project(':common')
+
+    implementation platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+    implementation platform("org.junit:junit-bom:$junitJupiterVersion")
+
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework:spring-aspects'
+
+    // OpenAPI, Swagger and API CodeGen
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion"
+    implementation "org.springdoc:springdoc-openapi-ui:$springDocUiVersion"
+    implementation 'jakarta.validation:jakarta.validation-api'
+    implementation "javax.annotation:javax.annotation-api:$javaxAnnotationVersion"
+    implementation "org.openapitools:jackson-databind-nullable:$jacksonDatabindNullableVersion"
+
+    // Metrics
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // JSON structured logging
+    implementation "net.logstash.logback:logstash-logback-encoder:$logbackEncoderVersion"
+
+    // Unit and integration test
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation "org.wiremock:wiremock-standalone:$wireMockVersion"
+    testImplementation "de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring31x:$embedMongoVersion"
+    testImplementation "no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion"
+    testImplementation "org.hamcrest:hamcrest-all:$harmcrestVersion"
+    testImplementation "com.tngtech.archunit:archunit-junit5:$archunitVersion"
+}
+
+springBoot {
+    buildInfo {
+        properties {
+            additional = [
+                    'description' : project.getDescription(),
+                    'java.version': "$javaVersion",
+            ]
+        }
+    }
+}
+
+gitProperties {
+    keys = ['git.branch', 'git.commit.id', 'git.build.version', 'git.tags', 'git.remote.origin.url']
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    '**/entity/**',
+                    '**/model/**',
+                    '**/dto/**',
+                    '**/config/**'
+            ])
+        }))
+    }
+}
+
+test() {
+    useJUnitPlatform() {
+        if (project.hasProperty('includeTag')) {
+            setIncludeTags([project.includeTag] as Set)
+        }
+
+        if (project.hasProperty('excludeTag')) {
+            setExcludeTags([project.excludeTag] as Set)
+        }
+    }
+    finalizedBy jacocoTestReport
+}
+
+tasks.register('generateAllOpenAPI') {
+    group = 'build'
+    description = 'Generate all Java classes and interfaces for all OpenAPI specifications.'
+    dependsOn generatePetStoreClasses, generateExternalAnimalVaccinationClasses
+}
+
+def generatedOpenApiSourcesDir = "${layout.buildDirectory.get()}/generated/sources/openapi"
+
+def openApiConfigOptions = [
+        skipDefaultInterface          : 'true',
+        requestMappingMode            : 'api_interface',
+        interfaceOnly                 : 'true',
+        useJakartaEe                  : 'true',
+        containerDefaultToNull        : 'true',
+        useEnumCaseInsensitive        : 'true',
+        additionalModelTypeAnnotations: '@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY)'
+]
+
+tasks.register('generatePetStoreClasses', GenerateTask) {
+    description = 'Generate Java classes for this microservice (Pet Store) from the Open API yaml definition.'
+    group = 'build'
+    generatorName.set('spring')
+    apiPackage = 'com.cgi.example.petstore.api'
+    modelPackage = 'com.cgi.example.petstore.model'
+    inputSpec.set("$rootDir/src/main/resources/openapi/pet-store-api.yaml")
+    outputDir = "${generatedOpenApiSourcesDir}/petstore"
+    configOptions.set(openApiConfigOptions)
+    validateSpec = true
+}
+
+tasks.register('generateExternalAnimalVaccinationClasses', GenerateTask) {
+    description = 'Generate Java classes from the external animal vaccination Open API yaml definition.'
+    group = 'build'
+    generatorName.set('spring')
+    apiPackage = 'com.cgi.example.external.animalvaccination.api'
+    modelPackage = 'com.cgi.example.external.animalvaccination.model'
+    inputSpec.set("$rootDir/src/main/resources/openapi/external/animal-vaccination-api.yaml")
+    outputDir = "${generatedOpenApiSourcesDir}/external/animalvaccination"
+    configOptions.set(openApiConfigOptions)
+    validateSpec = true
+}
+
+// Ensure all Java code is formatted consistently via the Spotless plugin.
+spotless {
+    java {
+        target 'src/main/java/**/*.java', 'src/test/java/**/*.java'
+        importOrder()
+        removeUnusedImports()
+        cleanthat().sourceCompatibility("$javaVersion")
+        googleJavaFormat()
+        formatAnnotations()
+    }
+}
+
+compileJava.dependsOn generateAllOpenAPI
+
+tasks.named('spotlessJava') {
+    dependsOn 'generateAllOpenAPI'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java',
+                       "${generatedOpenApiSourcesDir}/petstore/src/main/java",
+                       "${generatedOpenApiSourcesDir}/external/animalvaccination/src/main/java"]
+        }
+    }
+}
+
+// com.github.ben-manes.versions - Ignore non-stable formal release versions
+dependencyUpdates {
+    def isUnstable = { String version ->
+        def unstableVersionIdentifiers = ['ALPHA', 'BETA', '-M', '-RC']
+        return unstableVersionIdentifiers.any(qualifier -> version.toUpperCase().contains(qualifier))
+    }
+    rejectVersionIf { selection ->
+        return isUnstable(selection.candidate.version)
+    }
+}
+
+tasks.register('startWireMockEmbedded', JavaExec) {
+    group = 'application'
+    description = 'Start a WireMockServer to be used as a stub for the external API calls.'
+    classpath = sourceSets.test.runtimeClasspath
+    standardInput = System.in
+    getMainClass().set('com.cgi.example.petstore.utils.embedded.WireMockEmbedded')
+    jvmArgs '-Xms256m', '-Xmx1024m'
+}
+
+tasks.register('startMongoDBEmbedded', JavaExec) {
+    group = 'application'
+    description = 'Start an in-memory Mongo DB server.'
+    classpath = sourceSets.test.runtimeClasspath
+    standardInput = System.in
+    getMainClass().set('com.cgi.example.petstore.utils.embedded.MongoDBEmbedded')
+    jvmArgs '-Xms256m', '-Xmx1024m'
+}
+
+tasks.register('startOAuth2Embedded', JavaExec) {
+    group = 'application'
+    description = 'Start an in-memory OAuth2 server.'
+    classpath = sourceSets.test.runtimeClasspath
+    standardInput = System.in
+    getMainClass().set('com.cgi.example.petstore.utils.embedded.OAuth2Embedded')
+    jvmArgs '-Xms256m', '-Xmx1024m'
+}

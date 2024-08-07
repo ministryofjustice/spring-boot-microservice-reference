@@ -1,0 +1,40 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+management:
+  server.port: 8099
+  endpoints.web.exposure.include: health,info,metrics,prometheus,mappings,beans,loggers,env,configprops
+  endpoint.health.show-details: always
+  info.git.mode: full
+
+spring:
+  jackson.mapper.sort-properties-alphabetically: true
+  data.mongodb:
+    uri: ${MONGO_DB_URI}
+    database: petStoreDatabase
+  security:
+    oauth2:
+      client:
+        registration:
+          oauth-instance:
+            client-id: ${OAUTH_CLIENT_ID}
+            client-secret: ${OAUTH_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid
+        provider:
+          oauth-instance:
+            authorization-uri: ${OAUTH_HOST}/oauth2/authorize
+            token-uri: ${OAUTH_HOST}/oauth2/token
+            jwk-set-uri: ${OAUTH_HOST}/oauth2/jwks
+      resource-server.jwt.issuer-uri: ${OAUTH_HOST}/default
+
+logging.level:
+  root: INFO
+  com.cgi.example.petstore: INFO
+  org.springframework: INFO
+
+external.apis.vaccinations:
+  baseUrl: ${VACCINATIONS_URL}
+  path: vaccinations/{vaccinationId}
