@@ -15,6 +15,7 @@ import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.matching.PathTemplatePattern;
 import com.github.tomakehurst.wiremock.matching.UrlPathTemplatePattern;
 import com.github.tomakehurst.wiremock.matching.UrlPattern;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import org.hamcrest.Matchers;
@@ -64,7 +65,12 @@ class VaccinationsApiClientIntegrationTest extends BaseIntegrationTest {
   private ResponseDefinitionBuilder successResponse() {
     String body =
         fileUtils.readFile(
-            "wiremock\\__files\\vaccinations\\multipleVaccinationsResponse_AF54785412K.json");
+            Paths.get(
+                    "wiremock",
+                    "__files",
+                    "vaccinations",
+                    "multipleVaccinationsResponse_AF54785412K.json")
+                .toString());
 
     return aResponse()
         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)

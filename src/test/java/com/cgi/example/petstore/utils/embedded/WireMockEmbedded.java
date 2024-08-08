@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.http.trafficlistener.ConsoleNotifyingWiremockNetworkTrafficListener;
+import java.nio.file.Paths;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
@@ -31,7 +32,7 @@ public class WireMockEmbedded {
     WireMockConfiguration wireMockConfiguration =
         WireMockConfiguration.options()
             .dynamicPort()
-            .usingFilesUnderClasspath("src\\test\\resources\\wiremock")
+            .usingFilesUnderClasspath(Paths.get("src", "test", "resources", "wiremock").toString())
             .globalTemplating(true)
             .notifier(new ConsoleNotifier("WireMockConsoleLog", true))
             .maxRequestJournalEntries(100)

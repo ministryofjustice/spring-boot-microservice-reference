@@ -38,8 +38,8 @@ class ToClickableUriStringTest {
 
         String clickableUri = toClickableUriString.apply(nonExistentFile);
 
-        assertThat(clickableUri, Matchers.startsWith("file:///"));
-        assertThat(clickableUri, Matchers.containsString(fileName));
+        assertThat(clickableUri, Matchers.startsWith("file:/"));
+        assertThat(clickableUri, Matchers.endsWith(fileName));
     }
 
     @Test
@@ -52,7 +52,7 @@ class ToClickableUriStringTest {
 
         String clickableUri = toClickableUriString.apply(file);
 
-        assertThat(clickableUri, Matchers.startsWith("file:///"));
-        assertThat(clickableUri, Matchers.containsString(fileName));
+        assertThat(clickableUri, Matchers.startsWith("file:/"));
+        assertThat(clickableUri, Matchers.endsWith(fileName));
     }
 }
