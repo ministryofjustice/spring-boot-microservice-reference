@@ -72,7 +72,7 @@ The API provides the following functionality:
 #### Run the Pet Store microservice
 Requirements to run locally:
 
-* Java 21 e.g. https://jdk.java.net/21/
+* Java 22 e.g. https://jdk.java.net/22/
 * An IDE, IntelliJ (recommended), or Eclipse
 * (Nice to have) MongoDB or equivalent (e.g. Microsoft Azure CosmosDB via [CGI
   Sandbox](https://ensemble.ent.cgi.com/business/305832/serviceexcellence/Service%20Excellence%20Wiki%20Library/Sandbox.aspx))

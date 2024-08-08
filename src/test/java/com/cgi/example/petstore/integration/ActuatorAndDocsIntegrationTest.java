@@ -73,7 +73,7 @@ class ActuatorAndDocsIntegrationTest extends BaseIntegrationTest {
         assertions.assertStatusCode(response, HttpStatus.OK),
         assertions.assertContentType(response, "application/vnd.spring-boot.actuator.v3+json"),
         // JSON body, build attribute
-        assertions.assertJsonPathEquals("21", "$.build.java.version", responseBody),
+        assertions.assertJsonPathEquals("22", "$.build.java.version", responseBody),
         assertions.assertJsonPathEquals(
             "Spring Boot Template Service modeled on an online Pet Store.",
             "$.build.description",
