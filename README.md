@@ -2,7 +2,7 @@
 
 Spring Boot 3 based microservice template integrating features which address a majority of common business requirements.
 
-Contact: Alex Stone (alex.stone@cgi.com)
+Contact: Alex Stone alex.stone@digital.justice.gov.uk or alex.stone@cgi.com
 
 # Table of Contents
 
