@@ -1,4 +1,5 @@
 # PowerShell Script: cleanBuildTestAndRunLocally.ps1
+# TODO WIP Alex Stone
 
 Write-Host "Navigating to the microservice root directory:" $PSScriptRoot
 Set-Location -Path $PSScriptRoot
