@@ -99,7 +99,7 @@ class ActuatorAndDocsIntegrationTest extends BaseIntegrationTest {
         () ->
             assertThat(
                 JsonPath.read(responseBody, "$.git.remote.origin.url"),
-                Matchers.containsString("spring-boot-microservice-template.git")));
+                Matchers.containsString("spring-boot-microservice-reference.git")));
   }
 
   @ParameterizedTest
